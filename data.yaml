@@ -1,0 +1,66 @@
+tasks:
+  - identifier: T-1
+    description: Task 1
+    resource: Aaaa Aaaa
+    duration: 6
+  - identifier: T-2
+    description: Task 2
+    resource: Aaaa Aaaa
+    duration: 7
+  - identifier: T-3
+    description: Task 3
+    resource: Bbbb Bbbb
+    duration: 4
+  - identifier: T-4
+    description: Task 4
+    resource: Bbbb Bbbb
+    duration: 5
+  - identifier: T-5
+    description: Task 5
+    resource: Bbbb Bbbb
+    duration: 7
+  - identifier: T-6
+    description: Task 6
+    resource: Cccc Cccc
+    duration: 5
+  - identifier: T-7
+    description: Task 7
+    resource: Cccc Cccc
+    duration: 7
+worklogs:
+  - date: 03-20-2025
+    resource: Aaaa Aaaa
+    task: T-1
+    duration: 1
+  - date: 03-20-2025
+    resource: Bbbb Bbbb
+    task: T-3
+    duration: 1
+  - date: 03-20-2025
+    resource: Cccc cccc
+    task: T-6
+    duration: 1
+  - date: 03-21-2025
+    resource: Aaaa Aaaa
+    task: T-2
+    duration: 1
+  - date: 03-21-2025
+    resource: Bbbb Bbbb
+    task: T-3
+    duration: 1
+  - date: 03-21-2025
+    resource: Cccc Cccc
+    task: T-6
+    duration: 1
+  - date: 03-22-2025
+    resource: Aaaa Aaaa
+    task: T-2
+    duration: 1
+  - date: 03-22-2025
+    resource: Bbbb Bbbb
+    task: T-3
+    duration: 1
+  - date: 03-22-2025
+    resource: Cccc Cccc
+    task: T-6
+    duration: 1
