@@ -1,7 +1,7 @@
 import yaml
 from datetime import datetime, date
 import pytest
-
+import pprint
 class Resource:
     def __init__(self, name, internal=True):
         self.name = name
@@ -10,6 +10,12 @@ class Resource:
     def __hash__(self):
         return hash(self.name)
 
+    def __eq__(self, rhs):
+        return self.name == rhs.name
+    
+    def __repr__(self):
+        return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
+
 class Task:
     def __init__(self, identifier, description, person, duration):
         self.identifier = identifier
@@ -17,8 +23,14 @@ class Task:
         self.person = person
         self.duration = duration
     
-        def __hash__(self):
-            return hash(self.identifier)
+    def __hash__(self):
+        return hash(self.identifier)
+
+    def __eq__(self, rhs):
+        return self.identifier == rhs.identifier
+
+    def __repr__(self):
+        return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
 
 class Effort:
     def __init__(self, date, person, task, duration):
@@ -30,6 +42,9 @@ class Effort:
     def __eq__(self, rhs):
         return vars(self) == vars(rhs)
 
+    def __repr__(self):
+        return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
+
 class Project:
     def __init__(self):
         self.resources : dict[str, Resource] = dict()
@@ -38,8 +53,11 @@ class Project:
         # states
         self.currentDay = None
 
+    def __repr__(self):
+        return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
+
     def addResource(self, person):
-        if person not in self.resources:
+        if person in self.resources:
             return (False, "Duplicate resource")
         self.resources[person] = Resource(person)
         return (True, "Ok")
@@ -69,9 +87,12 @@ class Project:
                 def __init__(self):
                     self.daysSpent = 0.0
 
+                def __repr__(self):
+                    return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
+
                 def logEffort(self, duration):
                     self.daysSpent += duration
-    
+
             def __init__(self, resources, tasks):
                 self.resources : dict[str, Resource] = resources
                 self.tasks : dict[str, Task] = tasks
@@ -80,6 +101,9 @@ class Project:
                 for r in self.resources:
                     self.worklogs[r] = dict()
             
+            def __repr__(self):
+                return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
+
             def __updateWorklog__(self, effort):
                 resource = self.resources[effort.person]
                 worklog = self.worklogs[resource]
