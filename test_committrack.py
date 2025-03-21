@@ -37,20 +37,19 @@ def test_memfn_sortedEfforts(sampleProjectWithNonChronogicalEfforts):
 @pytest.fixture
 def minimalMeaningfulProject():
     project = committrack.Project()
-    project.addTask("1", "Task one", "Bengi Mizrahi", 10)
-    project.addTask("2", "Task two", "Aaaa Aaaa", 6)
-    project.addResource("Bengi Mizrahi")
+    assert project.addTask("1", "Task one", "Bengi Mizrahi", 10)
+    assert project.addTask("2", "Task two", "Aaaa Aaaa", 6)
+    assert project.addResource("Bengi Mizrahi")
     project.addEffort(date(2025, 3, 21), "Bengi Mizrahi", "1", 1)
     project.addEffort(date(2025, 3, 22), "Bengi Mizrahi", "1", 0.3)
     project.addEffort(date(2025, 3, 22), "Bengi Mizrahi", "2", 0.3)
     return project
 
 def test_report(minimalMeaningfulProject):
+    assert (resource := minimalMeaningfulProject.resources["Bengi Mizrahi"])
     report = minimalMeaningfulProject.generateReport()
-    resource = minimalMeaningfulProject.resources["Bengi Mizrahi"]
     efforts = report.worklogs[resource][date(2025, 3, 22)]
     assert len(efforts) == 2
-
     task = minimalMeaningfulProject.tasks["1"]
     taskStatus = report.taskStatuses[task]
     assert taskStatus.daysSpent == 1.3
