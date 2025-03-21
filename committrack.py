@@ -123,5 +123,4 @@ class Project:
         
         report = Report(self.resources, self.tasks)
         report.processEfforts(self.efforts);
-
         return report
