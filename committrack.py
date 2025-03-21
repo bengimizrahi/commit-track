@@ -9,12 +9,16 @@ class Resource:
 
     def __hash__(self):
         return hash(self.name)
+
 class Task:
     def __init__(self, identifier, description, person, duration):
         self.identifier = identifier
         self.description = description
         self.person = person
         self.duration = duration
+    
+        def __hash__(self):
+            return hash(self.identifier)
 
 class Effort:
     def __init__(self, date, person, task, duration):
@@ -28,8 +32,8 @@ class Effort:
 
 class Project:
     def __init__(self):
-        self.resources : dict[str, Resource]= dict()
-        self.tasks : dict[int, Task] = dict()
+        self.resources : dict[str, Resource] = dict()
+        self.tasks : dict[str, Task] = dict()
         self.efforts : list[Effort] = []
         # states
         self.currentDay = None
@@ -41,12 +45,12 @@ class Project:
         return (True, "Ok")
     
     def addTask(self, identifier, description=None, person=None, duration=0):
-        if identifier not in self.tasks:
+        if identifier in self.tasks:
             return (False, "Duplicate task")
         self.tasks[identifier] = Task(identifier, description, person, duration)
         return (True, "Ok")
 
-    def addEfforts(self, date, person, task, duration):
+    def addEffort(self, date, person, task, duration):
         self.efforts.append(Effort(date, person, task, duration))
 
     def __firstDate__(self):
@@ -59,16 +63,40 @@ class Project:
         efforts = sorted(self.efforts, key=lambda w: w.date)
         return efforts
     
-    def render(self):
-        class Sheet:
-            class Worklog:
-                def __init__(self, firstDay, resources, tasks):
-                    self.firstDay = firstDay
-                    self.worklogs : dict[Resource, dict[date, list[Effort]]] = dict()
+    def generateReport(self):
+        class Report:
+            class TaskStatus:
+                def __init__(self):
+                    self.daysSpent = 0.0
 
+                def logEffort(self, duration):
+                    self.daysSpent += duration
+    
+            def __init__(self, resources, tasks):
+                self.resources : dict[str, Resource] = resources
+                self.tasks : dict[str, Task] = tasks
+                self.worklogs : dict[Resource, dict[date, list[Effort]]] = dict()
+                self.taskStatuses : dict[Task, Report.TaskStatus] = dict()
+                for r in self.resources:
+                    self.worklogs[r] = dict()
             
-        if (firstDay := self.__firstDate__()) == None:
-            firstDay = datetime.today()
-        sheet = Sheet(firstDay, self.resources, self.tasks)
-        efforts = self.__sortedEfforts__()
-        for e in efforts:
+            def __updateWorklog__(self, effort):
+                resource = self.resources[effort.person]
+                worklog = self.worklogs[resource]
+                efforts = worklog.setdefault(effort.date, [])
+                efforts.append(effort)
+
+            def __updateTaskStatus__(self, effort):
+                task = self.tasks[effort.identifier]
+                taskStatus = self.taskStatuses.setdefault(task, Report.TaskStatus())
+                taskStatus.logEffort(effort.duration)
+
+            def processEfforts(self, efforts: list[Effort]):
+                for e in efforts:
+                    self.__updateWorklog__(e)
+                    self.__updateTaskStatus__(e)
+        
+        report = Report(self.resources, self.tasks)
+        report.processEfforts(self.efforts);
+
+        return report

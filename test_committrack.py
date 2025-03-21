@@ -1,6 +1,7 @@
 import pytest
 from datetime import date
 import committrack
+import pprint
 
 @pytest.fixture
 def emptyProject():
@@ -32,3 +33,15 @@ def test_memfn_sortedEfforts(sampleProjectWithNonChronogicalEfforts):
         committrack.Effort(date(2025, 10, 1), "Bengi Mizrahi", "Task-1", 1),
         committrack.Effort(date(2025, 10, 2), "Bengi Mizrahi", "Task-2", 1)
     ]
+
+@pytest.fixture
+def minimalMeaningfulProject():
+    project = committrack.Project()
+    project.addTask("1", "Task one", "Bengi Mizrahi", 1)
+    pprint.pprint(vars(project))
+    return project
+
+def test_report(minimalMeaningfulProject):
+    pprint.pprint(vars(minimalMeaningfulProject))
+    report = minimalMeaningfulProject.generateReport()
+    pprint.pprint(vars(report))
