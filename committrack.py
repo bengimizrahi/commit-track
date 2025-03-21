@@ -1,5 +1,5 @@
 import yaml
-import datetime
+from datetime import datetime, date
 import pytest
 
 class Resource:
@@ -7,6 +7,8 @@ class Resource:
         self.name = name
         self.internal = internal
 
+    def __hash__(self):
+        return hash(self.name)
 class Task:
     def __init__(self, identifier, description, person, duration):
         self.identifier = identifier
@@ -14,20 +16,23 @@ class Task:
         self.person = person
         self.duration = duration
 
-class Worklog:
+class Effort:
     def __init__(self, date, person, task, duration):
         self.date = date
-        self.task = task
         self.person = person
+        self.task = task
         self.duration = duration
+    
+    def __eq__(self, rhs):
+        return vars(self) == vars(rhs)
 
 class Project:
     def __init__(self):
-        self.resources = dict()
-        self.tasks = dict()
-        self.worklogs = []
+        self.resources : dict[str, Resource]= dict()
+        self.tasks : dict[int, Task] = dict()
+        self.efforts : list[Effort] = []
         # states
-        self.currentDay = 0
+        self.currentDay = None
 
     def addResource(self, person):
         if person not in self.resources:
@@ -41,12 +46,29 @@ class Project:
         self.tasks[identifier] = Task(identifier, description, person, duration)
         return (True, "Ok")
 
-    def addWorklog(self, date, person, task, duration):
-        self.worklogs.append(Worklog(date, person, task, duration))
+    def addEfforts(self, date, person, task, duration):
+        self.efforts.append(Effort(date, person, task, duration))
 
     def __firstDate__(self):
-        if len(self.worklogs) == 0:
-            return (False, "Cannot determine the first date, no worklogs available")
-        firstDate = min((w.date for w in self.worklogs))
-        return (firstDate, "Ok")
+        if len(self.efforts) == 0:
+            return None
+        firstDate = min((w.date for w in self.efforts))
+        return firstDate
 
+    def __sortedEfforts__(self):
+        efforts = sorted(self.efforts, key=lambda w: w.date)
+        return efforts
+    
+    def render(self):
+        class Sheet:
+            class Worklog:
+                def __init__(self, firstDay, resources, tasks):
+                    self.firstDay = firstDay
+                    self.worklogs : dict[Resource, dict[date, list[Effort]]] = dict()
+
+            
+        if (firstDay := self.__firstDate__()) == None:
+            firstDay = datetime.today()
+        sheet = Sheet(firstDay, self.resources, self.tasks)
+        efforts = self.__sortedEfforts__()
+        for e in efforts:
