@@ -1,4 +1,3 @@
-import yaml
 from datetime import datetime, date
 import pytest
 import pprint
