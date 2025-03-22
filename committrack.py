@@ -50,8 +50,6 @@ class Project:
         self.resources : dict[str, Resource] = dict()
         self.tasks : dict[str, Task] = dict()
         self.efforts : list[Effort] = []
-        # states
-        self.currentDay = None
 
     def __repr__(self):
         return pprint.pformat(f"{self.__class__.__name__}({self.__dict__})")
@@ -123,3 +121,7 @@ class Project:
         report = Report(self.resources, self.tasks)
         report.processEfforts(self.efforts);
         return report
+
+if __name__ == "__main__":
+    project = Project()
+    
