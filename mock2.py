@@ -15,7 +15,10 @@ class SheetView(ttk.Frame):
         self.columnconfigure(2, weight=0)
 
         leftCanvas = tk.Canvas(self)
-        leftCanvas.grid(row=0, column=0, sticky="nsew")
+
+        leftCanvas.config(borderwidth=2, relief="solid")
+        leftCanvas.grid(row=0, column=0, sticky="ns")
+        
         rightCanvas = tk.Canvas(self)
         rightCanvas.grid(row=0, column=1, sticky="nsew")
         def vscrollCmd(*args):
@@ -25,6 +28,9 @@ class SheetView(ttk.Frame):
         self.leftInnerFrame = ttk.Frame(leftCanvas)
         self.leftInnerFrame.bind("<Configure>",
                 lambda e: leftCanvas.configure(scrollregion=leftCanvas.bbox("all")))
+        self.leftInnerFrame.config(borderwidth=1, relief="solid")
+        self.leftInnerFrame.bind("<Configure>", lambda e: leftCanvas.config(width=e.width))
+
         leftCanvas.create_window((0, 0), window=self.leftInnerFrame, anchor="nw")
 
         self.rightInnerFrame = ttk.Frame(rightCanvas)
